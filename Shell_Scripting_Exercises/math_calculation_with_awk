@@ -1,0 +1,35 @@
+#!/bin/bash
+
+read -p "Enter a mathematical expression: " expression
+
+# Function to check if a number is less than or equal to 999
+is_valid_number() {
+    local number=$1
+    if ((number <= 999)); then
+        return 0  # Valid number
+    else
+        return 1  # Invalid number
+    fi
+}
+
+# Split the expression into tokens (operators, numbers, and parentheses)
+IFS=" +-*^/()" read -ra tokens <<< "$expression"
+
+# Loop through the tokens and validate numeric values
+valid_expression=true
+for token in "${tokens[@]}"; do
+    if [[ "$token" =~ ^[0-9]+$ ]]; then
+        if ! is_valid_number "$token"; then
+            valid_expression=false
+            break
+        fi
+    fi
+done
+
+if $valid_expression; then
+    result=$(awk "BEGIN { printf \"%.3f\", $expression }")
+    echo "$result"
+else
+    echo "Error: One or more numeric values in the expression are greater than 999."
+fi
+
